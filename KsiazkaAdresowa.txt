@@ -1,0 +1,24 @@
+1
+Wojtek
+Luczak
+Budowlanych 42/10 32-602 Oswiecim
+795949806
+uchyki
+2
+Aneta
+Jajcara
+Porowa 343 2342-23 Buly
+2342342
+sdf
+3
+Jacek
+Michalski
+Miuzka 23/32 24-534 Watory
+2342424
+sdfgs@ljksd.sdv
+4
+Waldek
+Kiepski
+Kulawa 23\32 32-543 Garba
+23424
+23423@ds
