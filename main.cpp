@@ -1,18 +1,98 @@
 #include <iostream>
 #include <windows.h>
 #include <fstream>
-
+#include <vector>
 
 using namespace std;
 
 struct Znajomy { //to jest uzyte pozniej jako nazwa typu danych w main
+    Znajomy()
+    {
+     id=0;
+    imie="nowy";
+    nazwisko="nowy";
+    adres="nowy";
+    telefon="nowy";
+    mail="nowy";
+    }
     int id;
     string imie, nazwisko, adres, telefon, mail;
 };
-int dodanieZnajomego(Znajomy znajomi[], int iloscZnajomych) { //tutaj oprocz podania nazwy tablicy podajemy nazwe calej struktury, przy samej deklaracji uzywamy tylko nazwy tablicy(bez nawiasow kwadratowych i nazwy struktury)
+
+
+Znajomy pobranieZnajomegoZJednejLinii(string liniaZPliku)
+{
+//string liniaZPliku="1|imie|nazwisko|adres|telefon|mail|";
+string roboczy;
+int iloscPrzerywnikow=0;
+string literaDoDodania;
+Znajomy adresatDoDodania;
+int id;
+string imie, nazwisko, adres, telefon, mail;
+//pobiera po kolei literki i dodaje do zmiennej roboczy
+for (int i=0; i<liniaZPliku.length(); i++)
+{
+    if (liniaZPliku[i]!=124)
+    {
+        literaDoDodania=liniaZPliku[i];
+        roboczy.insert(roboczy.length(), literaDoDodania);
+    }
+    else if (liniaZPliku[i]==124)
+        {
+        iloscPrzerywnikow++;
+//w zaleznosci od liczby przerywnikow przypisujemy roboczy do odpowiedniej zmiennej ze struktury
+        switch(iloscPrzerywnikow) {
+        case 1:
+            adresatDoDodania.id = atoi(roboczy.c_str());
+            break;
+        case 2:
+            adresatDoDodania.imie = roboczy;
+            break;
+        case 3:
+            adresatDoDodania.nazwisko = roboczy;
+            break;
+        case 4:
+            adresatDoDodania.adres = roboczy;
+            break;
+        case 5:
+            adresatDoDodania.telefon = roboczy;
+            break;
+        case 6:
+            adresatDoDodania.mail = roboczy;
+            break;
+        }
+        roboczy="";
+        }
+}
+
+    return adresatDoDodania;
+}
+
+vector <Znajomy> pobranieWszystkichZnajomychZPliku ()
+{
+Znajomy znajomyRoboczy;
+vector <Znajomy> znajomi;
+string liniaZPliku;
+fstream plik;
+plik.open("KsiazkaAdresowa.txt", ios::in);
+
+ if (plik.good() == true)
+ {
+while(getline(plik,liniaZPliku)) {
+    znajomyRoboczy=pobranieZnajomegoZJednejLinii(liniaZPliku);
+    znajomi.push_back(znajomyRoboczy);
+
+    }
+   plik.close();
+}
+return znajomi;
+}
+
+
+int dodanieZnajomego(vector <Znajomy> znajomi) { //tutaj oprocz podania nazwy tablicy podajemy nazwe calej struktury, przy samej deklaracji uzywamy tylko nazwy tablicy(bez nawiasow kwadratowych i nazwy struktury)
     string imie, nazwisko, ulica, nrMieszkania, kodPocztowy, miejscowosc, mail, telefon;
 
-
+    Znajomy nowy;
     cout << "Podaj imie znajomego: ";
     cin >> imie;
     system("cls");
@@ -21,18 +101,18 @@ int dodanieZnajomego(Znajomy znajomi[], int iloscZnajomych) { //tutaj oprocz pod
     system("cls");
 
     //sprawdzenie czy taki znajomy jest juz wpisany
-    for(int i=0; i<iloscZnajomych; i++) {
-        if((znajomi[i].imie==imie) && (znajomi[i].nazwisko==nazwisko)) {
+   for(int i=0; i<znajomi.size(); i++) {
+       if((znajomi[i].imie==imie) && (znajomi[i].nazwisko==nazwisko)) {
 
-            cout<<"Taki znajomy juz istnieje."<<endl;
-            Sleep(2000);
-            system("cls");
-            return(iloscZnajomych);
-        }
+           cout<<"Taki znajomy juz istnieje."<<endl;
+           Sleep(2000);
+           system("cls");
+           return(znajomi.size());
     }
+   }
 
     cout << "Podaj numer telefonu znajomego " << imie <<": ";
-    cin >> telefon;
+    cin >> nowy.telefon;
     system("cls");
     cout << "Podaj ulice, przy ktorej mieszka " << imie <<": ";
     cin >> ulica;
@@ -47,18 +127,14 @@ int dodanieZnajomego(Znajomy znajomi[], int iloscZnajomych) { //tutaj oprocz pod
     cin >> miejscowosc;
     system("cls");
     cout << "Podaj e-mail znajomego " << imie <<": ";
-    cin >> mail;
+    cin >> nowy.mail;
 
-    string adres = ulica+" "+ nrMieszkania+" "+ kodPocztowy+" "+ miejscowosc;
+    nowy.adres = ulica+" "+ nrMieszkania+" "+ kodPocztowy+" "+ miejscowosc;
 
-    int id = iloscZnajomych+1;
+    nowy.id = znajomi.size()+1;
 
-    znajomi[iloscZnajomych].id = id;
-    znajomi[iloscZnajomych].imie = imie;
-    znajomi[iloscZnajomych].nazwisko = nazwisko;
-    znajomi[iloscZnajomych].telefon = telefon;
-    znajomi[iloscZnajomych].mail = mail;
-    znajomi[iloscZnajomych].adres = adres;
+
+    znajomi.push_back(nowy);
 
     system("cls");
 
@@ -66,28 +142,22 @@ int dodanieZnajomego(Znajomy znajomi[], int iloscZnajomych) { //tutaj oprocz pod
     Sleep(2000);
     system("cls");
 
-    iloscZnajomych++;
-
 //dodawanie do pliku
     fstream plik;
     plik.open("KsiazkaAdresowa.txt", ios::out | ios::app);
 
-    plik<<id<<endl;
-    plik<<imie<<endl;
-    plik<<nazwisko<<endl;
-    plik<<adres<<endl;
-    plik<<telefon<<endl;
-    plik<<mail<<endl;
+    plik<<nowy.id<<"|"<<nowy.imie<<"|"<<nowy.nazwisko<<"|"<<nowy.adres<<"|"<<nowy.telefon<<"|"<<nowy.mail<<endl;
 
     plik.close();
 
-    return iloscZnajomych;
+    return znajomi.size();
 }
 
-int wyszukiwanieZnajomego(Znajomy znajomi[], int iloscZnajomych) { //tutaj oprocz podania nazwy tablicy podajemy nazwe calej struktury, przy samej deklaracji uzywamy tylko nazwy tablicy(bez nawiasow kwadratowych i nazwy struktury)
+
+int wyszukiwanieZnajomego(vector <Znajomy> znajomi) { //tutaj oprocz podania nazwy tablicy podajemy nazwe calej struktury, przy samej deklaracji uzywamy tylko nazwy tablicy(bez nawiasow kwadratowych i nazwy struktury)
     string imie, nazwisko;
     int iloscSprawdzonychKontaktow=0;
-    if(iloscZnajomych>0) {
+    if(znajomi.size()>0) {
         cout << "Jak chcesz wyszukac znajomego? " << endl;
         cout << "1. podajac imie" << endl;
         cout << "2. podajac nazwisko" << endl;
@@ -98,11 +168,12 @@ int wyszukiwanieZnajomego(Znajomy znajomi[], int iloscZnajomych) { //tutaj oproc
         case '1': {
             cout<<"Podaj imie wyszukiwanego znajomego"<<endl;
             cin>>imie;
+
             char pierwszaLitera = imie[0];
             char wielkaLitera=toupper(pierwszaLitera);
             imie[0] = wielkaLitera;
-            for (int i=0; i<iloscZnajomych; i++) //petla, ktora mowi do kiedy program sprawdza czy taki znajomy istnieje
 
+            for (int i=0; i<znajomi.size(); i++) //petla, ktora mowi do kiedy program sprawdza czy taki znajomy istnieje
                 if (znajomi[i].imie == imie ) {
                     cout<<endl<<znajomi[i].imie<<endl<<znajomi[i].nazwisko<<endl<<znajomi[i].adres<<endl<<znajomi[i].telefon<<endl<<znajomi[i].mail<<endl<<endl;
                     iloscSprawdzonychKontaktow++;
@@ -115,11 +186,13 @@ int wyszukiwanieZnajomego(Znajomy znajomi[], int iloscZnajomych) { //tutaj oproc
 
             cout<<"Podaj nazwisko wyszukiwanego znajomego"<<endl;
             cin>>nazwisko;
+
             //sprawdzenie, gdy ktos wpisze z malej litery;
             char pierwszaLitera = nazwisko[0];
             char wielkaLitera=toupper(pierwszaLitera);
             nazwisko[0] = wielkaLitera;
-            for (int i=0; i<iloscZnajomych; i++) //petla, ktora mowi do kiedy program sprawdza czy taki znajomy istnieje
+
+            for (int i=0; i<znajomi.size(); i++) //petla, ktora mowi do kiedy program sprawdza czy taki znajomy istnieje
 
                 if (znajomi[i].nazwisko == nazwisko) {
                     cout<<endl<<znajomi[i].imie<<endl<<znajomi[i].nazwisko<<endl<<znajomi[i].adres<<endl<<znajomi[i].telefon<<endl<<znajomi[i].mail<<endl<<endl;
@@ -138,12 +211,12 @@ int wyszukiwanieZnajomego(Znajomy znajomi[], int iloscZnajomych) { //tutaj oproc
         cout<<"nie masz znajomych"<<endl;
     system("pause");
     system("cls");
-    return iloscZnajomych;
+    return znajomi.size();
 
 }
-void listaZnajomych (Znajomy znajomi[], int iloscZnajomych) {
-    if(iloscZnajomych>0) {
-        for(int i=0; i < iloscZnajomych; i++)
+void listaZnajomych (vector<Znajomy> znajomi) {
+    if(znajomi.size()>0) {
+        for(int i=0; i < znajomi.size(); i++)
             cout<<znajomi[i].imie<<endl<<znajomi[i].nazwisko<<endl<<znajomi[i].adres<<endl<<znajomi[i].telefon<<endl<<znajomi[i].mail<<endl<<endl;
 
         system("pause");
@@ -155,58 +228,65 @@ void listaZnajomych (Znajomy znajomi[], int iloscZnajomych) {
     }
     system("cls");
 }
-int daneZPliku(Znajomy znajomi[], int iloscZnajomych) {
-    int nrLinii=1;
-    iloscZnajomych=0;
-    string linia;
-
-    fstream plik;
-    plik.open("KsiazkaAdresowa.txt", ios::in);
-
-    while(getline(plik,linia)) {
-        switch(nrLinii) {
-        case 1:
-            znajomi[iloscZnajomych].id = atoi(linia.c_str());
-            break;
-        case 2:
-            znajomi[iloscZnajomych].imie = linia;
-            break;
-        case 3:
-            znajomi[iloscZnajomych].nazwisko = linia;
-            break;
-        case 4:
-            znajomi[iloscZnajomych].adres = linia;
-            break;
-        case 5:
-            znajomi[iloscZnajomych].telefon = linia;
-            break;
-        case 6:
-            znajomi[iloscZnajomych].mail = linia;
-            break;
-        }
-        nrLinii++;
-        if (nrLinii==7) {
-            iloscZnajomych++;
-            nrLinii=1;
-        }
-
-    }
-    plik.close();
-    return(iloscZnajomych);
-}
-
+//int daneZPliku(vector<Znajomy> znajomi) {
+//    int nrLinii=1;
+//    string linia;
+//    Znajomy nowy;
+//    int id;
+//    string imie, nazwisko, adres, telefon, mail;
+//
+//    fstream plik;
+//    plik.open("KsiazkaAdresowa.txt", ios::in);
+//
+////    while(getline(plik,linia)) {
+////        switch(nrLinii) {
+////        case 1:
+////            id = atoi(linia.c_str());
+////            break;
+////        case 2:
+////            imie = linia;
+////            break;
+////        case 3:
+////            nazwisko = linia;
+////            break;
+////        case 4:
+////            adres = linia;
+////            break;
+////        case 5:
+////            telefon = linia;
+////            break;
+////        case 6:
+////            mail = linia;
+////            break;
+////        }
+////        nrLinii++;
+////        if (nrLinii==7) {
+////
+////        nowy = {id, imie, nazwisko, adres, telefon, mail};
+////
+////
+////    znajomi.push_back(nowy);
+////
+////            iloscZnajomych++;
+////            nrLinii=1;
+////        }
+//    }
+//    plik.close();
+//    return(iloscZnajomych);
+//}
 
 int main() {
     cout << "Witaj w Twojej ksiazce adresowej!" << endl;
-    Znajomy znajomi[1000];
+    vector <Znajomy> znajomi=pobranieWszystkichZnajomychZPliku ();
 
     char wybor;
 
-    int iloscZnajomych = daneZPliku(znajomi, iloscZnajomych);
+    //daneZPliku(znajomi, iloscZnajomych);
 
     while(1) {
+        znajomi=pobranieWszystkichZnajomychZPliku ();
 
-        cout << "Ilosc wpisanych znajomych: "<< iloscZnajomych << endl<<endl;
+        cout << "Ilosc wpisanych znajomych: "<< znajomi.size() << endl<<endl;
         cout << "Wybierz co chcesz teraz zrobic:" << endl;
         cout << "1. Dodaj znajomego" << endl;
         cout << "2. Znajdz znajomego" << endl;
@@ -217,15 +297,15 @@ int main() {
         switch (wybor) {
 
         case '1': {
-            iloscZnajomych = dodanieZnajomego(znajomi, iloscZnajomych);
+            dodanieZnajomego(znajomi);
         }
         break;
         case '2': {
-            wyszukiwanieZnajomego(znajomi, iloscZnajomych);
+            wyszukiwanieZnajomego(znajomi);
         }
         break;
         case '3': {
-            listaZnajomych(znajomi, iloscZnajomych);
+            listaZnajomych(znajomi);
         }
         break;
         case '9': {
@@ -241,5 +321,7 @@ int main() {
         break;
         }
     }
+
+
     return (0);
 }
