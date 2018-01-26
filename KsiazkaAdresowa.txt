@@ -1,5 +1,3 @@
-1|imie|nazwisko|adres|telefon|mail|
-2|imi|nazwisk|adre|telefo|mai|
-3|im|nazwis|adr|telef|ma|
-4|nowy|nowy|a a a a|a|a
-5|nowy|nowy|b b b b|b|b
+1|Wojti|Jajarz|dgsdg 235, 235235, sfsdg|2342342345|sdgdgs
+4|Wojto|Jajcarz|sfwef 2325, 23525, sdgsdg|1411135|gsvgsewg
+5|Wojto|Jajarz|esfdsfg 3423, 2354235, sdgsdgg|123414|efwefg
