@@ -5,10 +5,10 @@
 
 using namespace std;
 
-struct Znajomy { //to jest uzyte pozniej jako nazwa typu danych w main
+struct Znajomy {
     Znajomy()
     {
-     id=0;
+    id=0;
     imie="nowy";
     nazwisko="nowy";
     adres="nowy";
@@ -34,8 +34,19 @@ void dodanieDoPliku(Znajomy nowy)
     fstream plik;
     plik.open("KsiazkaAdresowa.txt", ios::out | ios::app);
 
-    plik<<nowy.id<<"|"<<nowy.imie<<"|"<<nowy.nazwisko<<"|"<<nowy.adres<<"|"<<nowy.telefon<<"|"<<nowy.mail<<endl;
+    plik<<nowy.id<<"|"<<nowy.imie<<"|"<<nowy.nazwisko<<"|"<<nowy.adres<<"|"<<nowy.telefon<<"|"<<nowy.mail<<"|"<<endl;
 
+    plik.close();
+}
+void dodanieDoPlikuWszystkichZnajomych(vector <Znajomy> znajomi)
+{
+    fstream plik;
+    plik.open("KsiazkaAdresowa.txt", ios::out | ios::trunc);
+    for (int i=0; i<znajomi.size(); i++)
+    {
+
+    plik<<znajomi[i].id<<"|"<<znajomi[i].imie<<"|"<<znajomi[i].nazwisko<<"|"<<znajomi[i].adres<<"|"<<znajomi[i].telefon<<"|"<<znajomi[i].mail<<"|"<<endl;
+    }
     plik.close();
 }
 
@@ -151,9 +162,10 @@ vector <Znajomy> dodanieZnajomego(vector <Znajomy> znajomi) { //tutaj oprocz pod
     cout << "Podaj miejscowosc, w ktorej mieszka " << nowy.imie <<": ";
     cin >> miejscowosc;
     system("cls");
+    cin.sync();
     cout << "Podaj e-mail znajomego " << nowy.imie <<": ";
     cin >> nowy.mail;
-
+    system("cls");
     nowy.adres = ulica+" "+ nrMieszkania+", "+ kodPocztowy+", "+ miejscowosc;
 
     if(znajomi.size()>0)
@@ -172,7 +184,6 @@ vector <Znajomy> dodanieZnajomego(vector <Znajomy> znajomi) { //tutaj oprocz pod
 
     return znajomi;
 }
-
 
 
 void wyszukiwanieZnajomego(vector <Znajomy> znajomi) { //tutaj oprocz podania nazwy tablicy podajemy nazwe calej struktury, przy samej deklaracji uzywamy tylko nazwy tablicy(bez nawiasow kwadratowych i nazwy struktury)
@@ -230,21 +241,175 @@ void wyszukiwanieZnajomego(vector <Znajomy> znajomi) { //tutaj oprocz podania na
     system("cls");
 
 }
+
+
 void listaZnajomych (vector<Znajomy> znajomi) {
     if(znajomi.size()>0) {
         for(int i=0; i < znajomi.size(); i++)
             cout<<znajomi[i].imie<<endl<<znajomi[i].nazwisko<<endl<<znajomi[i].adres<<endl<<znajomi[i].telefon<<endl<<znajomi[i].mail<<endl<<endl;
 
-        system("pause");
-        system("cls");
+
     } else {
         cout<<"nie masz znajomych";
 
         Sleep(2000);
+        system("cls");
     }
-    system("cls");
+
 }
 
+int okreslenieKtoryZnajomyMaBycEdytowany (vector <Znajomy> znajomi, string wybraneImie, string wybraneNazwisko)
+{
+     for (int i=0; i<znajomi.size(); i++)
+    {
+       if (wybraneImie==znajomi[i].imie &&wybraneNazwisko==znajomi[i].nazwisko)
+       {
+        cout<<znajomi[i].imie<<" "<< znajomi[i].nazwisko<<endl;
+        cout<<znajomi[i].adres<<endl;
+        cout<<znajomi[i].telefon<<endl;
+        cout<<znajomi[i].mail<<endl;
+
+        return znajomi[i].id;
+       }
+    }
+    cout<<"nie ma takiego kontaktu"<<endl;
+    system("pause");
+    system("cls");
+    return -1;
+}
+
+vector <Znajomy> edycjaZnajomego(vector <Znajomy>& znajomi, int idZnajomego)
+{
+   for (int i=0; i<znajomi.size(); i++)
+   {
+   if (znajomi[i].id==idZnajomego)
+    {
+        char wybor;
+    cout<<"Ktore dane chcesz edytowac?"<<endl;
+   cout<<"1. imie"<<endl;
+   cout<<"2. nazwisko"<<endl;
+   cout<<"3. adres"<<endl;
+   cout<<"4. telefon"<<endl;
+   cout<<"5. mail"<<endl;
+cin>>wybor;
+   switch (wybor) {
+
+        case '1': {
+            cout<<"podaj zmienione imie"<<endl;
+            cin>>znajomi[i].imie;
+            system("cls");
+        }
+        break;
+        case '2': {
+            cout<<"podaj zmienione nazwisko"<<endl;
+            cin>>znajomi[i].nazwisko;
+            system("cls");
+        }
+        break;
+        case '3': {
+            string ulica, nrMieszkania, kodPocztowy, miejscowosc;
+    cout << "Podaj zmieniona nazwe ulicy/aleji, przy ktorej mieszka " << znajomi[i].imie <<": ";
+    cin >> ulica;
+    system("cls");
+    cout << "Podaj zmieniony numer domu i mieszkania, w ktorym mieszka " << znajomi[i].imie <<"(nr domu/nr mieszkania): ";
+    cin >> nrMieszkania;
+    system("cls");
+    cout << "Podaj zmieniony kod pocztowy dla miejsca, gdzie mieszka " << znajomi[i].imie <<": ";
+    cin >> kodPocztowy;
+    system("cls");
+    cout << "Podaj zmieniona miejscowosc, w ktorej mieszka " << znajomi[i].imie <<": ";
+    cin >> miejscowosc;
+    system("cls");
+    znajomi[i].adres=ulica+" "+nrMieszkania+" "+kodPocztowy+" "+miejscowosc;
+        }
+        break;
+        case '4': {
+            cout<<"podaj zmieniony numer telefonu"<<endl;
+            cin>>znajomi[i].telefon;
+            system("cls");
+        }
+        break;
+        case '5': {
+            cout<<"podaj zmieniony e-mail"<<endl;
+            cin>>znajomi[i].mail;
+            system("cls");
+        }
+        break;
+        default: {
+            cout << "Blad!! Sprobuj jeszcze raz" <<endl;;
+
+        }
+        break;
+    }
+
+   }
+   }
+   return znajomi;
+}
+
+vector <Znajomy> usuniecieZnajomego (vector <Znajomy>& znajomi, int idZnajomego) {
+    for(int i=0; i<znajomi.size(); i++)
+    {
+        if(znajomi[i].id==idZnajomego)
+        {
+            znajomi.erase(znajomi.begin()+i);
+            cout<<"Kontakt zostal pomyslnie usuniety !!"<<endl;
+            Sleep(2000);
+            system("cls");
+        }
+
+    }
+    return znajomi;
+
+}
+
+vector <Znajomy> edycjaLubUsuniecieZnajomego(vector <Znajomy>& znajomi)
+{
+    listaZnajomych(znajomi);
+    char wybor;
+    if(znajomi.size()>0)
+    {
+
+
+    string wybraneImie, wybraneNazwisko;
+
+    cout<<"Wybierz z listy kontakt do edycji lub usuniecia"<<endl;
+    cout<<"podaj Imie i Nazwisko tego kontaktu (Imie Nazwisko)"<<endl;
+    cin>>wybraneImie>>wybraneNazwisko;
+    wybraneImie=zWielkiejLitery(wybraneImie);
+    wybraneNazwisko=zWielkiejLitery(wybraneNazwisko);
+
+        system("cls");
+    int idWybranejOsoby = okreslenieKtoryZnajomyMaBycEdytowany(znajomi, wybraneImie, wybraneNazwisko);
+    if (idWybranejOsoby!=-1)
+    {
+    cout<<endl<<"Wybierz co chcesz zrobic z wybranym kontaktem:"<<endl;
+    cout<<"1.Edytuj"<<endl;
+    cout<<"2.Usun"<<endl;
+    cin>>wybor;
+    switch (wybor) {
+
+        case '1': {
+            znajomi=edycjaZnajomego(znajomi, idWybranejOsoby);
+        }
+        break;
+        case '2': {
+            znajomi=usuniecieZnajomego(znajomi, idWybranejOsoby);
+        }
+        break;
+
+
+    }
+    return znajomi;
+    }
+    else
+    return znajomi;
+    }
+    else cout<<"nie masz znajomych"<<endl;
+    Sleep(2000);
+            system("cls");
+            return znajomi;
+}
 
 int main() {
     cout << "Witaj w Twojej ksiazce adresowej!" << endl;
@@ -278,9 +443,16 @@ int main() {
         break;
         case '3': {
             listaZnajomych(znajomi);
+            system("pause");
+        system("cls");
+        }
+        break;
+        case '4': {
+            znajomi=edycjaLubUsuniecieZnajomego(znajomi);
         }
         break;
         case '9': {
+            dodanieDoPlikuWszystkichZnajomych(znajomi);
             cout << "Do zobaczenia!";
             Sleep(1000);
             exit(0);
