@@ -5,5 +5,3 @@
 7|Wojtek|Luczak|Budowa 45/10, 32-600, Oswia|795949806|nowy|
 8|Wojtek2|Luczak|sdgsg 3434, 252, wegfew|234556677|nowy|
 9|Jacek|Nochal|s 32, 3, dbss|1|xxvv|
-10|A|S|f g, h, j|d|k|
-11|Krzys|Cholo|e r, t, y|w|u|
